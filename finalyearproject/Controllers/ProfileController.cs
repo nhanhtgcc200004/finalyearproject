@@ -1,5 +1,7 @@
-﻿using finalyearproject.Models;
+﻿using EnterpriceWeb.Controllers;
+using finalyearproject.Models;
 using finalyearproject.Repositories;
+using finalyearproject.SubSystem.Mailutils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace finalyearproject.Controllers
@@ -9,13 +11,17 @@ namespace finalyearproject.Controllers
         private ISession session;
         private UserRepo _userRepo;
         private ApplicationDBcontext _dbcontext;
+        private SendMailSystem _sendMailSystem;
+        private CvRepo cvRepo;
         private int user_id;
         private string role;
-        public ProfileController(ApplicationDBcontext dBcontext, HttpContextAccessor httpContextAccessor)
+        public ProfileController(ApplicationDBcontext dBcontext, HttpContextAccessor httpContextAccessor, IEmailSender emailSender, IWebHostEnvironment hostEnvironment)
         {
             _dbcontext = dBcontext;
             _userRepo = new UserRepo(_dbcontext);
             session =httpContextAccessor.HttpContext.Session;
+            _sendMailSystem=new SendMailSystem(emailSender, hostEnvironment);
+            cvRepo = new CvRepo(_dbcontext);
             user_id =(int) session.GetInt32("user_id");
             role = session.GetString("role");
         }
@@ -47,46 +53,20 @@ namespace finalyearproject.Controllers
             }
             return BadRequest();
         }
-        //[httpPost]
-        //private void DownloadUserCv(User user)
-        //{
-        //        List<string> titles = new List<string>();
-        //        List<CV> lst_selected_article = JsonConvert.DeserializeObject<List<DownLoadArticle>>(arrArticle);
-        //        int user_id = (int)session.GetInt32("User_id");
-        //        string role = session.GetString("role");
-        //        if (user_id != null && role != "admin")
-        //        {
-        //            if (lst_selected_article.Count > 0)
-        //            {
-        //                List<MemoryStream> memories = new List<MemoryStream>();
-
-        //                foreach (DownLoadArticle article in lst_selected_article)
-        //                {
-        //                    List<Article_file> lis_files = await _repoArticle_File.SearhAllArticleFileById(article.id);
-
-        //                    MemoryStream memory = mailSystem.DownloadSingleFile(lis_files);
-        //                    memories.Add(memory);
-        //                    titles.Add(article.title);
-        //                }
-        //                if (memories.Count > 1)
-        //                {
-        //                    MemoryStream memori = await mailSystem.DownloadProcessAsync(memories, titles);
-        //                    return File(memori.ToArray(), "application/zip", "selected_article.zip");
-
-        //                }
-        //                else if (memories.Count == 1)
-        //                {
-        //                    return File(memories.First().ToArray(), "application/zip", "selected_article.zip");
-        //                }
-        //            }
-        //            return RedirectToAction("Index", "Article");
-        //        }
-        //        else
-        //        {
-
-        //            return RedirectToAction("NotFound", "Home");
-        //        }
-        //}
+        [HttpPost]
+        private async void downloadusercv(User user)
+        { 
+            int user_id = (int)session.GetInt32("user_id");
+            string role = session.GetString("role");
+            if (user_id != null && role != null)
+            { 
+                CV user_cv= await cvRepo.SearchCvOfUser(user_id);
+           MemoryStream memory =_sendMailSystem.dowload(user_cv);
+                        //titles.add(article.title);
+                       // return file(memories.first().toarray(), "application/zip", "selected_article.zip");
+                    }
+                
+        }
         private void HandleUpdateProfile(User user)
         {
             _dbcontext.Update(user);

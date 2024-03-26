@@ -1,4 +1,5 @@
 ﻿using finalyearproject.Models;
+using finalyearproject.Models.ViewModel;
 using finalyearproject.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,7 @@ namespace finalyearproject.Controllers
         private readonly ApplicationDBcontext _dbContext;
         private readonly UserRepo userRepo;
         private PostRepo postRepo;
+        private CommentRepo commentRepo;
         private ISession Session;
         private int user_id;
         private string role;
@@ -17,6 +19,7 @@ namespace finalyearproject.Controllers
             _dbContext = dbContext;
             userRepo = new UserRepo(dbContext);
             postRepo = new PostRepo(dbContext);
+            commentRepo = new CommentRepo(dbContext);
             Session = httpContextAccessor.HttpContext.Session;
             user_id = (int) Session.GetInt32("user_id");
             role = Session.GetString("role");
@@ -27,10 +30,12 @@ namespace finalyearproject.Controllers
         }
         public async Task<IActionResult> Detail(int post_id)
         {
+            List<Comment> comments = await commentRepo.GetAllCommentByPostId(post_id);
             if (CheckUserInfo())
             {
                 Post post = await postRepo.SearchPostById(post_id);
-                return View(post);
+                Post_CommentViewModel post_comment= new Post_CommentViewModel(post,comments);
+                return View(post_comment);
             }
             else return NotFound();
         }
@@ -65,7 +70,10 @@ namespace finalyearproject.Controllers
             HandleUpdatePost(post);
             return RedirectToAction("Detail","Post", new {post_id=post.post_id});
         }
-
+        public async Task<IActionResult> Comment(int post_id, [FromForm] Comment comment)
+        {
+            return View();
+        }
         private void HandleUpdatePost(Post post)
         {
             _dbContext.Update(post);
@@ -91,9 +99,11 @@ namespace finalyearproject.Controllers
         }
        
         [HttpPost]
-        public void DeletePost(int id)
+        public async void DeletePost(int id)
         {
-            throw new NotImplementedException();
+            User user=await userRepo.SearchUserById(id);
+            _dbContext.Remove(user);
+            _dbContext.SaveChanges();
         }
     }
 }

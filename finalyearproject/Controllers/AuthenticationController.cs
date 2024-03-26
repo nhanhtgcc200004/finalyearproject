@@ -86,7 +86,8 @@ namespace finalyearproject.Controllers
                 user.Status = "waiting for confirmation";
                 HandleRegister(user);
                 User new_user = await userRepo.SearchUserJustInsert();
-                HandleAddVerifyCode(new_user);
+                String verify_code=HandleAddVerifyCode(new_user);
+                mailSystem.SendVerifyCode(verify_code, new_user.Email);
                 return RedirectToAction("VerifyAccount", "Authentication", new {id=new_user.user_id });
             }
             return View();
@@ -201,7 +202,15 @@ namespace finalyearproject.Controllers
             }
             return false;
         }
-
+        private async void SendVerifyAgain(int user_id)
+        {
+            Verification verification= await verifyRepo.SearchVerifyCodeOfUser(user_id);
+            User user = await userRepo.SearchUserById(user_id);
+            verification.verify_code = RandomVerifyCode();
+            _dbContext.Update(verification);
+            _dbContext.SaveChanges();
+            mailSystem.SendVerifyCode(verification.verify_code,user.Email);
+        }
         private void changesPassword(string newpassword, User user)
         {
             user.Password = newpassword;
@@ -211,7 +220,6 @@ namespace finalyearproject.Controllers
 
         private bool CheckValue(User user)
         {
-           
             if (user == null)
             {
                 return true;
@@ -241,13 +249,14 @@ namespace finalyearproject.Controllers
             _dbContext.Add(company);
             _dbContext.SaveChanges();
         }
-        private void HandleAddVerifyCode(User user)
+        private string HandleAddVerifyCode(User user)
         {
             Verification verification = new Verification();
             verification.user_id = user.user_id;
             verification.verify_code = RandomVerifyCode();
             _dbContext.Add(verification);
             _dbContext.SaveChanges();
+            return verification.verify_code;
         }
 
         private string RandomVerifyCode()

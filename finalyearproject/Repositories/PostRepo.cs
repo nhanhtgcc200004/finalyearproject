@@ -13,11 +13,11 @@ namespace finalyearproject.Repositories
         }
         public async Task<List<Post>> SearchAllPost()
         {
-            return await dbcontext.Posts.ToListAsync();
+            return await dbcontext.Posts.Where(p => p.status !="reported").ToListAsync();
         }
         public async Task<Post> SearchPostById(int post_id)
         {
-            return await dbcontext.Posts.Where(p=>p.post_id==post_id).FirstOrDefaultAsync();
+            return await dbcontext.Posts.Where(p=>p.post_id==post_id && p.status!="reported").FirstOrDefaultAsync();
         }
         public async Task<List<Post>> SearchPost(string search_value)
         {

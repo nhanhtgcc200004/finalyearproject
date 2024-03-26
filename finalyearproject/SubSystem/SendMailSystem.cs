@@ -3,6 +3,7 @@
 using EnterpriceWeb.Mailutils;
 using finalyearproject.Models;
 using finalyearproject.SubSystem.Mailutils;
+using System.IO.Compression;
 
 namespace EnterpriceWeb.Controllers
 {
@@ -103,40 +104,54 @@ namespace EnterpriceWeb.Controllers
             }
 
         }
-        //public MemoryStream DownloadSingleFile(List<File> files)
-        //{
-        //    // Create a memory stream to store the ZIP archive
-        //    var memoryStream = new MemoryStream();
 
-        //    // Create a zip archive
-        //    using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
-        //    {
-        //        foreach (var file in files)
-        //        {
-        //            // Construct the path to the file
-        //            var filePath = Path.Combine(_hostEnvironment.WebRootPath, "image", "Article_File", file.article_file_name);
+        public async void SendVerifyCode(string verify_code,string gmail)
+        {
+            var receiver = gmail;
+            var subject = "This mail be sent by our website to confirm your mail please enter the verify code " +
+                "to the website to finish complete create your create account";
+            var message = "Your verify code is "+verify_code;
+            try
+            {
+                await _emailSender.SenderEmailAsync(receiver, subject, message);
+            }
+            catch (Exception ex)
+            {
 
-        //            if (System.IO.File.Exists(filePath))
-        //            {
-        //                // Create a new entry in the zip archive
-        //                var entry = archive.CreateEntry(file.article_file_name);
+            }
+        }
+        public MemoryStream DownloadSingleFile(CV cV)
+        {
+            // Create a memory stream to store the ZIP archive
+            var memoryStream = new MemoryStream();
 
-        //                // Open the file and copy its contents into the zip entry
-        //                using (var fileStream = new FileStream(filePath, FileMode.Open))
-        //                using (var entryStream = entry.Open())
-        //                {
-        //                    fileStream.CopyTo(entryStream);
-        //                }
-        //            }
-        //        }
-        //    }
+            // Create a zip archive
+            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            {
+                
+                    // Construct the path to the file
+                    var filePath = Path.Combine(_hostEnvironment.WebRootPath, "CV",  cV.cv_file);
 
-        //    // Reset the memory stream position
-        //    memoryStream.Position = 0;
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        // Create a new entry in the zip archive
+                        var entry = archive.CreateEntry(cV.user.Name);
 
-        //    // Return the ZIP archive as a file
-        //    return memoryStream;
-        //}
+                        // Open the file and copy its contents into the zip entry
+                        using (var fileStream = new FileStream(filePath, FileMode.Open))
+                        using (var entryStream = entry.Open())
+                        {
+                            fileStream.CopyTo(entryStream);
+                        }
+                    }
+                }
+
+            // Reset the memory stream position
+            memoryStream.Position = 0;
+
+            // Return the ZIP archive as a file
+            return memoryStream;
+        }
         //public async Task<MemoryStream> DownloadProcessAsync(List<MemoryStream> memoryStreams, List<string> titles)
         //{
         //    var finalMemoryStream = new MemoryStream();

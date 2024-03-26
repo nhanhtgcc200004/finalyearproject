@@ -60,9 +60,6 @@ namespace finalyearproject.Controllers
                 HandleAcceptReport(post,reporter,reciver,report);
             }
         }
-
-        
-
         [HttpDelete]
         public async void RefuseReport(int report_id)
         {
@@ -82,7 +79,7 @@ namespace finalyearproject.Controllers
 
         private void updatePost(Post post)
         {
-            post.status = "0";
+            post.status = "reported";
             _dbcontext.Update(post);
             _dbcontext.SaveChanges();
         }
