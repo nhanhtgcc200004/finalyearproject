@@ -106,5 +106,11 @@ namespace finalyearproject.Controllers
             _dbContext.Remove(user);
             _dbContext.SaveChanges();
         }
+        [HttpPost]
+        public async Task<IActionResult> AppliedJob(int post_id)
+        {
+
+            return View();
+        }
     }
 }

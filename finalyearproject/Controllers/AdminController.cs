@@ -8,5 +8,10 @@ namespace finalyearproject.Controllers
         {
             return View();
         }
+        public async Task<IActionResult> Chart()
+        {
+            return View();
+        }
+
     }
 }

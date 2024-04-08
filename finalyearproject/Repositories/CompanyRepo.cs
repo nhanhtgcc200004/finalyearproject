@@ -14,5 +14,6 @@ namespace finalyearproject.Repositories
         {
             return await _dbcontext.Companys.ToListAsync();
         }
+        
     }
 }

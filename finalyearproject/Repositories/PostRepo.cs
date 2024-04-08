@@ -23,5 +23,10 @@ namespace finalyearproject.Repositories
         {
             return await dbcontext.Posts.Where(p=>p.post_title.Contains(search_value)).ToListAsync();
         }
+
+        internal List<Post> SearchAllPostWithCondition(string search_value, string condition)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

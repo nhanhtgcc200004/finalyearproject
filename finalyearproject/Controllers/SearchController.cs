@@ -38,5 +38,11 @@ namespace finalyearproject.Controllers
           return await PostRepo.SearchPost(search_value);
         }
 
+        private async Task<List<Post>> HandleSearchFollowCondition(string search_value, string condition)
+        {
+            List<Post> posts = PostRepo.SearchAllPostWithCondition(search_value, condition);
+            return posts;
+        }
+
     }
 }

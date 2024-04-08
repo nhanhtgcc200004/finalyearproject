@@ -26,11 +26,12 @@ namespace finalyearproject.Controllers
             user_id =(int) session.GetInt32("user_id");
             role = session.GetString("role");
         }
-        public IActionResult Index(int id)
+        public async Task<IActionResult> Index(int id)
         {
             if (Checkinfor(id))
             {
-                return View();
+                User user= await _userRepo.SearchUserById(id);
+                return View(user);
             }
             return BadRequest();
         }

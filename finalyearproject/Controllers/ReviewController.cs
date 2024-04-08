@@ -25,5 +25,33 @@ namespace finalyearproject.Controllers
         {
             return View();
         }
+        public void HandleReviewConpany(Review review)
+        {
+            _dbContext.Add(review);
+            _dbContext.SaveChanges();
+        }
+        public async Task<IActionResult> UpdateReview(int reviewId)
+        {
+            Review review = await _reviewRepo.GetReviewById(reviewId);
+            return View(review);
+        }
+        [HttpPut]
+        public IActionResult UpdateReview(Review review)
+        {
+            HandleUpdateReview(review);
+            return RedirectToAction("Index");
+        }
+
+        private void HandleUpdateReview(Review review)
+        {
+            _dbContext.Update(review);
+            _dbContext.SaveChanges();
+        }
+        public async void HandleDeleteReview(int reviewId)
+        {
+            Review review= await _reviewRepo.GetReviewById(reviewId);
+            _dbContext.Remove(review);
+            _dbContext.SaveChanges();
+        }
     }
 }
