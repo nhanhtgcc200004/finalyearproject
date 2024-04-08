@@ -24,9 +24,10 @@ namespace finalyearproject.Controllers
             user_id = (int) Session.GetInt32("user_id");
             role = Session.GetString("role");
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            List<Post> posts = await postRepo.SearchAllPost();
+            return View(posts);
         }
         public async Task<IActionResult> Detail(int post_id)
         {

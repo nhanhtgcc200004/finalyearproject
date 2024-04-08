@@ -1,4 +1,5 @@
-﻿using EnterpriceWeb.Controllers;
+﻿using Amazon.DeviceFarm.Model;
+using EnterpriceWeb.Controllers;
 using finalyearproject.Models;
 using finalyearproject.Repositories;
 using finalyearproject.SubSystem.Mailutils;
@@ -54,18 +55,21 @@ namespace finalyearproject.Controllers
             return BadRequest();
         }
         [HttpPost]
-        private async void downloadusercv(User user)
+        private async Task<IActionResult> downloadUserCv(int user_profile_id)
         { 
             int user_id = (int)session.GetInt32("user_id");
             string role = session.GetString("role");
             if (user_id != null && role != null)
-            { 
-                CV user_cv= await cvRepo.SearchCvOfUser(user_id);
-           MemoryStream memory =_sendMailSystem.dowload(user_cv);
-                        //titles.add(article.title);
-                       // return file(memories.first().toarray(), "application/zip", "selected_article.zip");
-                    }
-                
+            {
+                CV user_cv = await cvRepo.SearchCvOfUser(user_profile_id);
+                MemoryStream memory = _sendMailSystem.DownloadSingleFile(user_cv);
+                return File(memory.ToArray(), "application/zip", user_cv.user.Name);
+            }
+            return null;
+        }
+        private async void UploadCV()
+        {
+
         }
         private void HandleUpdateProfile(User user)
         {

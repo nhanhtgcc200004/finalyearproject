@@ -26,7 +26,6 @@ namespace finalyearproject.Controllers
                return View(HandleSearch(search_value));
             }
             return View();
-            
         }
 
         private bool ChecktypeSearch()

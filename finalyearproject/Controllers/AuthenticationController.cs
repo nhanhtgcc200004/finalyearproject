@@ -23,7 +23,10 @@ namespace finalyearproject.Controllers
             mailSystem = new SendMailSystem(emailSender,hostEnvironment);
             verifyRepo = new VerifyRepo(_dbContext);
         }
-
+        public IActionResult Index() 
+        { 
+            return View(); 
+        }
         public IActionResult Login()
         {
             if (Session.GetString("role") != null&& Session.GetInt32("user_id")!=null)
@@ -79,7 +82,7 @@ namespace finalyearproject.Controllers
         [HttpPost]
         public async Task<IActionResult> Register([FromForm] User user)//
         {
-            User s_user = await userRepo.SearchUserByEmail(user.Email);
+            User s_user = await userRepo.SearchUserByMail(user.Email);
             if (CheckValue(s_user))
             {
                 user.role = "user";
@@ -127,7 +130,7 @@ namespace finalyearproject.Controllers
         {
             if (gmail != null)
             {
-                User user1 = new User(); //await _repoAccount.SearhUserBymail(gmail);
+             User user1 = await userRepo.SearchUserByMail(gmail);
                 if (user1 != null)
                 {
                     string newpassword = await mailSystem.SendgmailForgetPassword(gmail);
@@ -284,6 +287,7 @@ namespace finalyearproject.Controllers
         private void CompleteVefify(User user, Verification verification)
         {
             user.Status = "verified";
+            user.Viewable = "Private";
             _dbContext.Update(user);
             _dbContext.Remove(verification);
             _dbContext.SaveChanges();
