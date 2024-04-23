@@ -15,7 +15,7 @@ namespace finalyearproject.Controllers
         private ISession Session;
         private SendMailSystem mailSystem;
         private VerifyRepo verifyRepo;
-        public AuthenticationController(ApplicationDBcontext dbContext, HttpContextAccessor httpContextAccessor, IEmailSender emailSender, IWebHostEnvironment hostEnvironment)
+        public AuthenticationController(ApplicationDBcontext dbContext, IHttpContextAccessor httpContextAccessor, IEmailSender emailSender, IWebHostEnvironment hostEnvironment)
         {
             _dbContext = dbContext;
             userRepo = new UserRepo(dbContext);
@@ -23,7 +23,7 @@ namespace finalyearproject.Controllers
             mailSystem = new SendMailSystem(emailSender,hostEnvironment);
             verifyRepo = new VerifyRepo(_dbContext);
         }
-
+      
         public IActionResult Login()
         {
             if (Session.GetString("role") != null&& Session.GetInt32("user_id")!=null)
@@ -79,7 +79,7 @@ namespace finalyearproject.Controllers
         [HttpPost]
         public async Task<IActionResult> Register([FromForm] User user)//
         {
-            User s_user = await userRepo.SearchUserByEmail(user.Email);
+            User s_user = await userRepo.SearchUserByMail(user.Email);
             if (CheckValue(s_user))
             {
                 user.role = "user";
@@ -127,7 +127,7 @@ namespace finalyearproject.Controllers
         {
             if (gmail != null)
             {
-                User user1 = new User(); //await _repoAccount.SearhUserBymail(gmail);
+             User user1 = await userRepo.SearchUserByMail(gmail);
                 if (user1 != null)
                 {
                     string newpassword = await mailSystem.SendgmailForgetPassword(gmail);
@@ -163,7 +163,7 @@ namespace finalyearproject.Controllers
         {
             if (checkUser(id))
             {
-                User user=new User();//await UserRepo.SearchUserById(id);
+                User user=await userRepo.SearchUserById(id);
                 if (checkPassword(user,current_password,new_passsword,confirm_password))
                 {
                     changesPassword(new_passsword, user);
@@ -284,6 +284,7 @@ namespace finalyearproject.Controllers
         private void CompleteVefify(User user, Verification verification)
         {
             user.Status = "verified";
+            user.Viewable = "Private";
             _dbContext.Update(user);
             _dbContext.Remove(verification);
             _dbContext.SaveChanges();

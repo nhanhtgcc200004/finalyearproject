@@ -30,7 +30,7 @@ namespace finalyearproject.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            List<Report> reports=await _reportRepo.SearchAllReport() as List<Report>;
+            List<Report> reports=await _reportRepo.SearchAllReport();
             return View(reports);
         }
         [HttpPost]

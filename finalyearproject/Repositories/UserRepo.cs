@@ -24,7 +24,7 @@ namespace finalyearproject.Repositories
         {
             return await dbcontext.Users.Where(u=>u.Status!="0").ToListAsync();
         }
-        public async Task<User> SearchUserByEmail(string email)
+        public async Task<User> SearchUserByMail(string email)
         {
             User user = await dbcontext.Users.Where(u => u.Email == email).FirstAsync();
             return user;
@@ -33,5 +33,7 @@ namespace finalyearproject.Repositories
         {
             return await dbcontext.Users.LastAsync();
         }
+
+        
     }
 }

@@ -26,7 +26,6 @@ namespace finalyearproject.Controllers
                return View(HandleSearch(search_value));
             }
             return View();
-            
         }
 
         private bool ChecktypeSearch()
@@ -37,6 +36,12 @@ namespace finalyearproject.Controllers
         private async Task<List<Post>> HandleSearch(string search_value)
         {
           return await PostRepo.SearchPost(search_value);
+        }
+
+        private async Task<List<Post>> HandleSearchFollowCondition(string search_value, string condition)
+        {
+            List<Post> posts = PostRepo.SearchAllPostWithCondition(search_value, condition);
+            return posts;
         }
 
     }

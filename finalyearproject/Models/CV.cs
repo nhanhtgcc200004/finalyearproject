@@ -13,7 +13,9 @@ namespace finalyearproject.Models
         public string cv_file {  get; set; }
         [Required(ErrorMessage ="date upload can't be empty")]
         public DateTime date_upload { get; set; }
+        
         public int user_id {  get; set; }
+        [ForeignKey("user_id")]
         [Required(ErrorMessage ="User can't be empty")]
         public User user { get; set; }
 

@@ -1,5 +1,4 @@
-﻿using Amazon.IdentityManagement.Model;
-using finalyearproject.Models;
+﻿using finalyearproject.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace finalyearproject.Repositories
