@@ -13,17 +13,16 @@ namespace finalyearproject.Controllers
             _dbContext = dbContext;
             _reviewRepo = new ReviewRepo(_dbContext);
         }
-
-
         public async Task<IActionResult> Index()
         {
             List<Review> reviews = await _reviewRepo.GetAllReviews();
             return View(reviews);
         }
-
-        public IActionResult Details()
+        public async Task<IActionResult> Details(int reviewId)
         {
-            return View();
+            Review review= await _reviewRepo.GetReviewById(reviewId);
+
+            return View(review);
         }
         public void HandleReviewConpany(Review review)
         {
@@ -41,7 +40,6 @@ namespace finalyearproject.Controllers
             HandleUpdateReview(review);
             return RedirectToAction("Index");
         }
-
         private void HandleUpdateReview(Review review)
         {
             _dbContext.Update(review);

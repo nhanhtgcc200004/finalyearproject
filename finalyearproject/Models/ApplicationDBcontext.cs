@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace finalyearproject.Models
 {
     public class ApplicationDBcontext : DbContext
     {
+        public ApplicationDBcontext() { }
         public ApplicationDBcontext(DbContextOptions options) : base(options) { }
         public DbSet<User> Users { get; set; }
         public DbSet<CV> CVs { get; set; }
