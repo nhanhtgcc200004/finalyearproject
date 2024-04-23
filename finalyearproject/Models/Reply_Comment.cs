@@ -1,9 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace finalyearproject.Models
 {
     public class Reply_Comment
     {
+        [Key]
+        [Required(ErrorMessage = "Reply_id can't be empty")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int reply_id { get; set; }
         public int user_id {  get; set; }
         [ForeignKey("user_id")]

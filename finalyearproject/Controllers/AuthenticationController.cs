@@ -15,7 +15,7 @@ namespace finalyearproject.Controllers
         private ISession Session;
         private SendMailSystem mailSystem;
         private VerifyRepo verifyRepo;
-        public AuthenticationController(ApplicationDBcontext dbContext, HttpContextAccessor httpContextAccessor, IEmailSender emailSender, IWebHostEnvironment hostEnvironment)
+        public AuthenticationController(ApplicationDBcontext dbContext, IHttpContextAccessor httpContextAccessor, IEmailSender emailSender, IWebHostEnvironment hostEnvironment)
         {
             _dbContext = dbContext;
             userRepo = new UserRepo(dbContext);
@@ -23,10 +23,7 @@ namespace finalyearproject.Controllers
             mailSystem = new SendMailSystem(emailSender,hostEnvironment);
             verifyRepo = new VerifyRepo(_dbContext);
         }
-        public IActionResult Index() 
-        { 
-            return View(); 
-        }
+      
         public IActionResult Login()
         {
             if (Session.GetString("role") != null&& Session.GetInt32("user_id")!=null)
@@ -166,7 +163,7 @@ namespace finalyearproject.Controllers
         {
             if (checkUser(id))
             {
-                User user=new User();//await UserRepo.SearchUserById(id);
+                User user=await userRepo.SearchUserById(id);
                 if (checkPassword(user,current_password,new_passsword,confirm_password))
                 {
                     changesPassword(new_passsword, user);

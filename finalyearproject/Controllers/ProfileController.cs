@@ -1,4 +1,4 @@
-﻿using Amazon.DeviceFarm.Model;
+﻿
 using EnterpriceWeb.Controllers;
 using finalyearproject.Models;
 using finalyearproject.Repositories;

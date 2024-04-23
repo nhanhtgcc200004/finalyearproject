@@ -71,10 +71,44 @@ namespace finalyearproject.Controllers
             HandleUpdatePost(post);
             return RedirectToAction("Detail","Post", new {post_id=post.post_id});
         }
-        public async Task<IActionResult> Comment(int post_id, [FromForm] Comment comment)
+        public async Task<IActionResult> AddComment(int post_id, [FromForm] Comment comment)
         {
             return View();
         }
+        public async void UpdateComment(int comment_id,string newcontent,string type_comment)
+        {
+            if (type_comment=="reply")
+            {
+                Reply_Comment reply = await commentRepo.GetReplyCommentByCommentId(comment_id);
+                HandleUpdateComment(newcontent,reply,"reply");
+            }
+            else
+            {
+                Comment comment = await commentRepo.GetCommentById(comment_id);
+                HandleUpdateComment(newcontent, comment,"comment");
+            }
+            
+        }
+
+        private void HandleUpdateComment(string newcontent,Object comment,string type)
+        {
+            if (type == "reply")
+            {
+                Reply_Comment reply = (Reply_Comment)comment;
+                reply.reply_content = newcontent;
+                _dbContext.Update(reply);
+                _dbContext.SaveChanges();
+            }
+            else
+            {
+                Comment newcomment = (Comment)comment;
+                newcomment.comment_content = newcontent;
+                _dbContext.Update(newcomment);
+                _dbContext.SaveChanges();
+            }
+           
+        }
+
         private void HandleUpdatePost(Post post)
         {
             _dbContext.Update(post);
@@ -112,5 +146,7 @@ namespace finalyearproject.Controllers
 
             return View();
         }
+       
+
     }
 }
